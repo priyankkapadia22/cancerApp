@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "762448013773",
+    "firebase_url": "https://cancer-vision-app-default-rtdb.firebaseio.com",
+    "project_id": "cancer-vision-app",
+    "storage_bucket": "cancer-vision-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:762448013773:android:a7223081477619ca4a3c84",
+        "android_client_info": {
+          "package_name": "com.example.cancervision"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "762448013773-4loog23dpfk9fjadnfkgf94riqqmn518.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.cancervision",
+            "certificate_hash": "3eac5fff9b59ffa41d851cf18f2c471a58a341f9"
+          }
+        },
+        {
+          "client_id": "762448013773-v3l92ljagqcr8jvvo8ga89u5hdaq6s7m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCVnOm1MJyWgPZ2fB9EOJs7UCmvND0bik8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "762448013773-v3l92ljagqcr8jvvo8ga89u5hdaq6s7m.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "762448013773-9212f144bav3jdnlvk6eci9js4rm9ksu.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.cancervision"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
