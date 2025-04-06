@@ -8,40 +8,38 @@ CancerVision leverages state-of-the-art deep learning models and natural languag
 ## Features:
 ### User Authentication
 - **Signup and Login:** Users must create an account and log in to access the app's features.
-<center>
 <img src="screenshots/signup.jpg" alt="Signup" height="700"/>
 <img src="screenshots/login.jpg" alt="Login" height="700"/>
-</center>
 
 ### Dashboard
 - **Overview:** Displays total scanned images and the date of the last scan.
 - **Cancer Information:** Provides brief descriptions of various cancer types, such as lung, breast, and colon cancer.
-![Dashboard](screenshots/dashboard.jpg)
+<img src="screenshots/dashboard.jpg" alt="Dashboard" height="700"/>
 
 ### Image Analysis
 - **Upload Image:** Users can upload histopathology images for analysis.
 - **Analyze Image:** Image is uploaded to Firebase, triggering an API call to classify the image into cancer types like carcinoma and adenocarcinoma.
 - **Prediction Results:** Presents the predicted class, confidence score, and individual predictions from each of the three pre-trained models.
-![Image Analysis](screenshots/image_analysis.jpg)
-![Result](screenshots/result.jpg)
+<img src="screenshots/image_analysis.jpg" alt="Image_Analysis" height="700"/>
+<img src="screenshots/result.jpg" alt="Result" height="700"/>
 
 ### Records
 - **View Records:** Users can access previously predicted image records, including timestamps, images, prediction classes, and confidence scores.
-![View Records](screenshots/view_records.jpg)
+<img src="screenshots/view_records.jpg" alt="Records" height="700"/>
 
 ### Profile Management
 - **Edit Profile:** Users can modify personal information.
 - **Delete Account:** Users can permanently delete their account.
-![Profile Management](screenshots/profile.jpg)
+<img src="screenshots/profile.jpg" alt="profile" height="700"/>
 
 ### Health Tips
 - **Daily Tips:** Provides users with health tips related to cancer prevention and care.
-![Health Tips](screenshots/healthtip.jpg)
+<img src="screenshots/healthtip.jpg" alt="HealthTip" height="700"/>
 
 ### Chatbot
 - **Cancer Queries:** Users can ask questions and receive responses from a trained LLaMA model.
 - **Delete Chat History:** Users can clear their chat history.
-![Chatbot](screenshots/chatbot.jpg)
+<img src="screenshots/chatbot.jpg" alt="Chatbot" height="700"/>
 
 ### Data Storage
 - **SQLite Database:** Utilized to maintain user state and data persistence.
