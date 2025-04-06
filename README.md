@@ -30,7 +30,7 @@ CancerVision leverages state-of-the-art deep learning models and natural languag
 ### Profile Management
 - **Edit Profile:** Users can modify personal information.
 - **Delete Account:** Users can permanently delete their account.
-![Profile Management](screenshots/profile_management.png)
+![Profile Management](screenshots/profile.png)
 
 ### Health Tips
 - **Daily Tips:** Provides users with health tips related to cancer prevention and care.
