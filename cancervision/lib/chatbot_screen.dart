@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
@@ -15,18 +16,50 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   final ScrollController _scrollController = ScrollController();
   final List<ChatMessage> _messages = [];
   bool _isTyping = false;
+  bool _isConnected = false;
 
-  // API URL - Replace with your actual backend API URL
-  final String apiUrl = "https://3ca3-136-233-130-145.ngrok-free.app";
+  // API URL - Use your PC's actual IP address
+  final String apiUrl = "http://192.168.231.90:8000/chat";
 
   @override
   void initState() {
     super.initState();
     _loadChatHistory();
-    // Add initial welcome message
-    _addBotMessage(
-      "Hello! I'm your CancerVision AI assistant. How can I help you today?",
-    );
+    _testConnection(); // Test connection on startup
+  }
+
+  @override
+  void dispose() {
+    _messageController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  // Test connection to server
+  Future<void> _testConnection() async {
+    try {
+      final baseUrl = apiUrl.substring(0, apiUrl.lastIndexOf('/'));
+      final response = await http.get(
+        Uri.parse(baseUrl),
+      ).timeout(Duration(seconds: 5));
+      
+      setState(() {
+        _isConnected = response.statusCode == 200;
+      });
+      
+      print("Connection test to $baseUrl: ${response.statusCode}");
+      
+      if (_isConnected) {
+        print("✅ Connection successful!");
+      } else {
+        print("⚠️ Server returned status: ${response.statusCode}");
+      }
+    } catch (e) {
+      setState(() {
+        _isConnected = false;
+      });
+      print("❌ Connection test failed: $e");
+    }
   }
 
   Future<void> _loadChatHistory() async {
@@ -45,9 +78,21 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
             ));
           }
         });
+        _scrollToBottom();
+      } else {
+        // Only add the welcome message if there's no chat history
+        _addBotMessage(
+          "Hello! I'm your CancerVision AI assistant. How can I help you today?",
+        );
       }
     } catch (e) {
       print("Error loading chat history: $e");
+      // If there's an error loading chat history, add the welcome message
+      if (_messages.isEmpty) {
+        _addBotMessage(
+          "Hello! I'm your CancerVision AI assistant. How can I help you today?",
+        );
+      }
     }
   }
 
@@ -56,7 +101,12 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
       final prefs = await SharedPreferences.getInstance();
       List<String> chatHistory = [];
       
-      for (ChatMessage message in _messages) {
+      // Limit history size to prevent excessive storage use
+      final messagesToSave = _messages.length > 100 
+          ? _messages.sublist(_messages.length - 100) 
+          : _messages;
+      
+      for (ChatMessage message in messagesToSave) {
         chatHistory.add(json.encode({
           'text': message.text,
           'isUser': message.isUser,
@@ -79,6 +129,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
       ));
     });
     _saveChatHistory();
+    _scrollToBottom();
   }
 
   void _addBotMessage(String message) {
@@ -90,6 +141,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
       ));
     });
     _saveChatHistory();
+    _scrollToBottom();
   }
 
   Future<void> _sendMessage() async {
@@ -98,49 +150,79 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     final userMessage = _messageController.text.trim();
     _addUserMessage(userMessage);
     _messageController.clear();
-    
-    // Scroll to bottom after sending message
-    _scrollToBottom();
 
     // Set typing indicator
     setState(() {
       _isTyping = true;
     });
 
+    print("Sending request to: $apiUrl");
+    print("Request body: ${json.encode({"query": userMessage})}");
+
     try {
-      // Call your backend API
+      // Call your backend API with increased timeout
       final response = await http.post(
         Uri.parse(apiUrl),
         headers: {"Content-Type": "application/json"},
         body: json.encode({
-          "message": userMessage,
+          "query": userMessage,  
         }),
-      );
+      ).timeout(Duration(seconds: 60)); // Longer timeout for LLM processing
+
+      // Debug log
+      print("Response status: ${response.statusCode}");
+      print("Response body: ${response.body}");
 
       setState(() {
         _isTyping = false;
+        _isConnected = true; // Connection worked
       });
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        _addBotMessage(data['response']);
+        try {
+          final data = json.decode(response.body);
+          if (data.containsKey('response')) {
+            _addBotMessage(data['response']);
+          } else {
+            print("Unexpected response format: $data");
+            _addBotMessage("I received a response but couldn't understand it. Please try again.");
+          }
+        } catch (e) {
+          print("JSON parsing error: $e");
+          _addBotMessage("I received a response but couldn't parse it properly. Please try again.");
+        }
       } else {
-        _addBotMessage(
-          "I'm having trouble connecting to my servers. Please try again later.",
-        );
+        // More specific error message based on status code
+        if (response.statusCode == 503) {
+          _addBotMessage(
+            "The service is temporarily unavailable. Please try again later.",
+          );
+        } else {
+          _addBotMessage(
+            "I encountered an error (${response.statusCode}). Please try again later.",
+          );
+        }
+        print("API Error: Status ${response.statusCode}, Body: ${response.body}");
       }
     } catch (e) {
       setState(() {
         _isTyping = false;
+        _isConnected = false; // Connection failed
       });
-      _addBotMessage(
-        "I'm having trouble connecting to my servers. Please try again later.",
-      );
+      
+      String errorMessage = "I'm having trouble connecting to my servers. Please try again later.";
+      
+      if (e.toString().contains("SocketException")) {
+        errorMessage = "Network connection error. Please check that your device and the server (192.168.231.90) are on the same network.";
+      } else if (e.toString().contains("TimeoutException")) {
+        errorMessage = "The server took too long to respond. This might be due to high processing demand or connection issues.";
+      } else if (e.toString().contains("FormatException")) {
+        errorMessage = "I received a response but couldn't understand it. Please try again.";
+      }
+      
+      _addBotMessage(errorMessage);
       print("API Error: $e");
     }
-    
-    // Scroll to bottom after response
-    _scrollToBottom();
   }
   
   void _scrollToBottom() {
@@ -180,13 +262,16 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                   style: GoogleFonts.poppins(
                     fontWeight: FontWeight.w600,
                     fontSize: 16,
+                    color: const Color.fromARGB(255, 204, 195, 195)
                   ),
                 ),
                 Text(
-                  "Online",
+                  _isConnected ? "Connected" : "Disconnected",
                   style: GoogleFonts.poppins(
                     fontSize: 12,
-                    color: Colors.white.withOpacity(0.8),
+                    color: _isConnected 
+                        ? Colors.white.withOpacity(0.8) 
+                        : Colors.red.shade300,
                   ),
                 ),
               ],
@@ -196,10 +281,19 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
         backgroundColor: Theme.of(context).primaryColor,
         elevation: 0,
         actions: [
+          // Add a test connection button
           IconButton(
+            icon: Icon(Icons.refresh),
+            onPressed: _testConnection,
+            color: Colors.grey.shade100,
+            tooltip: "Test connection",
+          ),
+          IconButton(
+            
             icon: Icon(Icons.delete_outline),
             onPressed: _showClearChatDialog,
             tooltip: "Clear chat",
+            color: Colors.grey.shade100
           ),
         ],
       ),
@@ -209,6 +303,37 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
         ),
         child: Column(
           children: [
+            // Connection status banner
+            if (!_isConnected)
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                color: Colors.red.shade100,
+                child: Row(
+                  children: [
+                    Icon(Icons.error_outline, color: Colors.red),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        "Not connected to server at 192.168.231.90. Make sure both devices are on the same network.",
+                        style: GoogleFonts.poppins(
+                          fontSize: 12,
+                          color: Colors.red.shade900,
+                        ),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: _testConnection,
+                      child: Text("RETRY"),
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.red.shade900,
+                        padding: EdgeInsets.symmetric(horizontal: 12),
+                        minimumSize: Size(0, 0),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              
             // Chat messages area
             Expanded(
               child: ListView.builder(
@@ -358,7 +483,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  SelectableText(  // Changed to SelectableText for copy functionality
                     message.text,
                     style: GoogleFonts.poppins(
                       color: isUser ? Colors.white : Colors.black87,
