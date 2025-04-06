@@ -8,38 +8,38 @@ CancerVision leverages state-of-the-art deep learning models and natural languag
 ## Features:
 ### User Authentication
 - **Signup and Login:** Users must create an account and log in to access the app's features.
-![Signup](screenshots/signup.png)
-![Login](screenshots/login.png)
+![Signup](screenshots/signup.jpg)
+![Login](screenshots/login.jpg)
 
 ### Dashboard
 - **Overview:** Displays total scanned images and the date of the last scan.
 - **Cancer Information:** Provides brief descriptions of various cancer types, such as lung, breast, and colon cancer.
-![Dashboard](screenshots/dashboard.png)
+![Dashboard](screenshots/dashboard.jpg)
 
 ### Image Analysis
 - **Upload Image:** Users can upload histopathology images for analysis.
 - **Analyze Image:** Image is uploaded to Firebase, triggering an API call to classify the image into cancer types like carcinoma and adenocarcinoma.
 - **Prediction Results:** Presents the predicted class, confidence score, and individual predictions from each of the three pre-trained models.
-![Image Analysis](screenshots/image_analysis.png)
-![Result](screenshots/result.png)
+![Image Analysis](screenshots/image_analysis.jpg)
+![Result](screenshots/result.jpg)
 
 ### Records
 - **View Records:** Users can access previously predicted image records, including timestamps, images, prediction classes, and confidence scores.
-![View Records](screenshots/view_records.png)
+![View Records](screenshots/view_records.jpg)
 
 ### Profile Management
 - **Edit Profile:** Users can modify personal information.
 - **Delete Account:** Users can permanently delete their account.
-![Profile Management](screenshots/profile.png)
+![Profile Management](screenshots/profile.jpg)
 
 ### Health Tips
 - **Daily Tips:** Provides users with health tips related to cancer prevention and care.
-![Health Tips](screenshots/healthtip.png)
+![Health Tips](screenshots/healthtip.jpg)
 
 ### Chatbot
 - **Cancer Queries:** Users can ask questions and receive responses from a trained LLaMA model.
 - **Delete Chat History:** Users can clear their chat history.
-![Chatbot](screenshots/chatbot.png)
+![Chatbot](screenshots/chatbot.jpg)
 
 ### Data Storage
 - **SQLite Database:** Utilized to maintain user state and data persistence.
