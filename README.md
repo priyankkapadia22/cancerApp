@@ -9,7 +9,7 @@ CancerVision leverages state-of-the-art deep learning models and natural languag
 ### User Authentication
 - **Signup and Login:** Users must create an account and log in to access the app's features.
 <p align="center">
-  <img src="screenshots/signup.jpg" alt="Signup" height="500" width="500" />
+  <img src="screenshots/signup.jpg" alt="Signup" height="500" width="250" />
   <img src="screenshots/login.jpg" alt="Login" height="500" />
 </p>
 
