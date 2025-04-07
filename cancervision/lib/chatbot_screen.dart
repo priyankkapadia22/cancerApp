@@ -19,7 +19,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   bool _isConnected = false;
 
   // API URL - Use your PC's actual IP address
-  final String apiUrl = "http://192.168.231.90:8000/chat";
+  final String apiUrl = "https://cancer-chatbot-ij32.onrender.com/chat";
 
   @override
   void initState() {
